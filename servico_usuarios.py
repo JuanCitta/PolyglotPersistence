@@ -41,10 +41,30 @@ def inserir_usuarios(usuarios : list[Usuario]):
         conn.commit()
         return f"Mensagem de sucesso. {len(tuplas)} usuarios foram adicionados."
     except Exception as e:
-            print(e)
-            return f"Erro na transacao com o banco {e}"
+        print(e)
+        return f"Erro na transacao com o banco {e}"
 
     finally:
-            if 'conn' in locals():
-                    conn.close()
+        conn.close()
 
+def buscar_usuarios(usuario_id=None):
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        if(usuario_id is None):
+            query = "SELECT username, id FROM usuarios"
+            cursor.execute(query)
+            resultado = cursor.fetchall()
+            return resultado
+          
+        else:
+            query = f"SELECT username, id FROM usuarios WHERE id = {usuario_id}"
+            print(query)
+            cursor.execute(query)
+            resultado = cursor.fetchall()
+            return resultado
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+    finally:
+        conn.close()

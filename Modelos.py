@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 
 
     
@@ -16,3 +16,18 @@ class Usuario:
     email : str
     password : str
     join_date : date
+
+@dataclass
+class Post  :
+      id : int
+      username: str
+      likes : int
+      comments : list
+      create_date : datetime
+
+@dataclass
+class Like:
+    id : int
+    username_de : str
+    username_para : str
+    data_conexao : date
