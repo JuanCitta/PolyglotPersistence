@@ -45,9 +45,10 @@ def inserir_usuarios(usuarios : list[Usuario]):
         return f"Erro na transacao com o banco {e}"
 
     finally:
+        cursor.close()
         conn.close()
 
-def buscar_usuarios(usuario_id=None):
+def buscar_usuarios(usuario_id: str =None):
     try:
         conn = conectar()
         cursor = conn.cursor()
@@ -55,16 +56,54 @@ def buscar_usuarios(usuario_id=None):
             query = "SELECT username, id FROM usuarios"
             cursor.execute(query)
             resultado = cursor.fetchall()
-            return resultado
+            
           
         else:
-            query = f"SELECT username, id FROM usuarios WHERE id = {usuario_id}"
-            print(query)
-            cursor.execute(query)
+            query = f"SELECT username, id FROM usuarios WHERE id = %s"
+
+            cursor.execute(query,(usuario_id))
             resultado = cursor.fetchall()
-            return resultado
+        
+        return resultado
+    
     except Exception as e:
         print(e)
         return f"Erro na transacao com o banco {e}"
     finally:
+        cursor.close()
+        conn.close()
+
+
+def alterar_username(username : str,username_novo : str):
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        query = """UPDATE usuarios SET username = %s
+        usuarios WHERE id = %s"""
+        cursor.execute(query,(username_novo,username))
+        conn.commit()
+        print(f"{cursor.rowcount} colunas atualizadas")
+
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+    finally:
+        cursor.close()
+        conn.close()
+
+def alterar_password(username : str,password_novo : str):
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        query = """UPDATE usuarios SET password = %s
+        usuarios WHERE id = %s"""
+        cursor.execute(query,(password_novo,username))
+        conn.commit()
+        print(f"{cursor.rowcount} colunas atualizadas")
+
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+    finally:
+        cursor.close()
         conn.close()
