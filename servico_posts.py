@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from Modelos import Post
 from dataclasses import asdict
 from servico_conexoes import inserir_conexao_post, inserir_conexao_posts
+
 client : MongoClient = MongoClient()
 uri = "mongodb://localhost:27017/"
 client = MongoClient(uri)
@@ -18,12 +19,14 @@ def contar_posts():
         print(e)
         return f"Erro na transacao com o banco {e}"
 
-def inserir_posts(posts : list[Post]):
+def inserir_posts(posts : list[dict]):
     try:
         collection.drop()
-        result = collection.insert_many(posts)
-        inserir_conexao_posts(posts)
-        return result
+
+        for post in posts:
+            collection.insert_one(post)
+        return f"Sucesso: Foram inseridos {len(posts)} posts"
+    
     except Exception as e:
         print(e)
         return f"Erro na transacao com o banco {e}"

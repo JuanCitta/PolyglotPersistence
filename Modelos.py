@@ -7,7 +7,7 @@ from datetime import date, datetime
 class Conexao:
     username_de : str
     username_para: str
-    data_conexao : date
+    data_conexao : str
 
 @dataclass
 class Usuario:
@@ -15,7 +15,7 @@ class Usuario:
     username : str
     email : str
     password : str
-    join_date : date
+    join_date : str
 
 @dataclass
 class Post:
@@ -25,14 +25,14 @@ class Post:
     username: str
     likes : int
     comments : list
-    create_date : datetime
+    create_date : str
 
 @dataclass
 class Like:
     id : int
     username_de : str
     username_para : str
-    data_conexao : date
+    data_conexao : str
 
 @dataclass
 class Comentario:
@@ -41,4 +41,4 @@ class Comentario:
     username: str
     likes : int
     responses : list
-    create_date : datetime
+    create_date : str

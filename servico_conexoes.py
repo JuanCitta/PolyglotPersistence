@@ -16,7 +16,7 @@ def inserir_conexoes(conexoes):
             database_="neo4j")
 
         for conexao in conexoes:
-            summary = driver.execute_query("""
+            records, summary, keys = driver.execute_query("""
                 MERGE (a:user {username: $name})
                 MERGE (b:user {username: $friendName})
                 MERGE (a)-[:CONECTOU {desde: $date}]-(b)
@@ -24,7 +24,7 @@ def inserir_conexoes(conexoes):
                 name=conexao.username_de, friendName=conexao.username_para,date= conexao.data_conexao,
                 database_="neo4j",
             )
-        #if(summary.count>0): return f"Mensagem de sucesso. {len(conexoes)} conexoes adicionadas."
+        if summary.counters.relationships_created > 0: return f"Mensagem de sucesso. {len(conexoes)} conexoes adicionadas."
 
 def inserir_conexao(conexao : Conexao):
     with GraphDatabase.driver(URI, auth=AUTH) as driver:
@@ -109,10 +109,10 @@ def inserir_conexao_posts(posts):
                     name=username, id_post=post_id,date= data,
                     database_="neo4j",
                 )
-            if summary.counters.relationships_created > 0:
+            #if summary.counters.relationships_created > 0:
                 
-                print(f"Nova conexao: {username} -> {post_id}")
+                #print(f"Nova conexao: {username} -> {post_id}")
             
-            else:
-                print(f"Conexao ja existente: {username} -> {post_id}")
-        return summary
+            #else:
+                #print(f"Conexao ja existente: {username} -> {post_id}")
+    return f"Sucesso!: {len(posts)} conexoes adicionadas"

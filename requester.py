@@ -4,8 +4,28 @@ from servico_conexoes import *
 from gerador_de_dados import *
 from Modelos import *
 import requests
+import json
 
+url = 'http://127.0.0.1:8000' 
 
+def fazer_request(operacao,dados,endpoint):
+    try:
+        metodo = getattr(requests,operacao)
+        req = metodo(url+endpoint,json=dados)
+        req.raise_for_status()
+        inserir_no_log(req)
+    except requests.exceptions.HTTPError as err:
+        print(f"Erro HTTP: {err}")
+    except requests.exceptions.RequestException as e:
+        print(f"Erro na requisição: {e}")
+
+def transformar_em_dict(lista : list):
+    if(isinstance(lista, list)):
+        lista_limpa = []
+        for elemento in lista:
+            lista_limpa.append(asdict(elemento))
+        return lista_limpa
+    else: return asdict(lista)
 def main():
     print("--------------------------------")
     print("            Lankedin")
@@ -21,11 +41,13 @@ def main():
     match i:
         case 1:
             lista_usuarios = popular_usuarios(10)
-            lista_conexoes = popular_conexoes(lista_usuarios)
-            lista_posts = popular_posts(lista_usuarios)
-            inserir_usuarios(lista_usuarios)
-            inserir_conexoes(lista_conexoes)
-            inserir_posts(lista_posts)
+            lista_conexoes = transformar_em_dict(popular_conexoes(lista_usuarios))
+            lista_posts    = popular_posts(lista_usuarios)
+            lista_usuarios_l = transformar_em_dict(lista_usuarios)
+            fazer_request("post",lista_usuarios_l,"/users/popular")
+            fazer_request("post",lista_conexoes,"/conexoes/popular")
+            fazer_request("post",lista_posts,"/posts/popular")
+            fazer_request("post", lista_posts,"/posts/conexoes/popular")
         case 2:
             print("1. Inserir usuario")
             print("2. Inserir conexao entre usuarios")
@@ -33,8 +55,8 @@ def main():
             m = int(input("Digite o modo"))
             match m:
                 case 1:
-                    user = gerar_usuario(quantidade_usuarios())
-                    inserir_usuario(user)
+                    user = asdict(gerar_usuario())
+                    fazer_request("post",user,"/users/")
                 case 2:
                     con = gerar_conexao()
                     inserir_conexao(con)
@@ -68,8 +90,7 @@ def main():
                 case 1:
                     u = input("Digite o nome de usuario: ")
                     un = input("Digite o novo nome de usuario: ")
-                    res = alterar_username(u,un)
-                    print(res)
+                    
                 case 2:
                     p = input("Digite o username: ")
                     passw = input("Digite a senha")
@@ -101,6 +122,10 @@ def main():
                     res = deletar_post(p)
                     print(res)
 
+def inserir_no_log(response):
+    string = f"{response.text} em {response.elapsed} \n"
+    with open("log.txt", 'a') as log:
+        log.write(string)
 
 if __name__ == "__main__":
     main()
