@@ -48,23 +48,45 @@ def inserir_usuarios(usuarios : list[Usuario]):
         cursor.close()
         conn.close()
 
-def buscar_usuarios(usuario_id: str =None):
+def inserir_usuario(user):
+    conn = conectar()
+    cursor = conn.cursor()
+  
+    try:
+        query = "INSERT INTO usuarios(id, username, email, password, join_date) VALUES(%s, %s, %s, %s, %s)"
+        tupla = (user.id, user.username, user.email, user.password, user.join_date)
+        cursor.execute(query,tupla)
+        conn.commit()
+        return f"Mensagem de sucesso. {len(tupla)} usuarios foram adicionados."
+
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+
+    finally:
+        cursor.close()
+        conn.close()
+
+def buscar_usuario(username):
     try:
         conn = conectar()
         cursor = conn.cursor()
-        if(usuario_id is None):
+        if(not username):
+            usuarios = []
             query = "SELECT username, id FROM usuarios"
             cursor.execute(query)
             resultado = cursor.fetchall()
-            
-          
-        else:
-            query = f"SELECT username, id FROM usuarios WHERE id = %s"
+            for us in resultado:
+                usuarios.append(Usuario(*resultado))
+            return usuarios
 
-            cursor.execute(query,(usuario_id))
-            resultado = cursor.fetchall()
-        
-        return resultado
+        else:
+            query = "SELECT * FROM usuarios WHERE username = %s"
+
+            cursor.execute(query,(username,))
+            resultado = cursor.fetchone()
+            retorno = Usuario(*resultado)
+            return retorno
     
     except Exception as e:
         print(e)
@@ -73,13 +95,46 @@ def buscar_usuarios(usuario_id: str =None):
         cursor.close()
         conn.close()
 
+def quantidade_usuarios():
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        query = """SELECT COUNT(*) FROM usuarios;"""
+        cursor.execute(query)
+        resultado = cursor.fetchall()[0]
+        return resultado
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+    finally:
+        cursor.close()
+        conn.close()
+
+def usuario_aleatorio():
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        query = """SELECT *
+                    FROM usuarios
+                    ORDER BY RANDOM()
+                    LIMIT 1;"""
+        cursor.execute(query)
+        resultado = cursor.fetchone()
+        user = Usuario(resultado[0],resultado[1],resultado[2],resultado[3],resultado[4])
+        return user
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+    finally:
+        cursor.close()
+        conn.close()
 
 def alterar_username(username : str,username_novo : str):
     try:
         conn = conectar()
         cursor = conn.cursor()
         query = """UPDATE usuarios SET username = %s
-        usuarios WHERE id = %s"""
+         WHERE username = %s"""
         cursor.execute(query,(username_novo,username))
         conn.commit()
         print(f"{cursor.rowcount} colunas atualizadas")
@@ -98,6 +153,22 @@ def alterar_password(username : str,password_novo : str):
         query = """UPDATE usuarios SET password = %s
         usuarios WHERE id = %s"""
         cursor.execute(query,(password_novo,username))
+        conn.commit()
+        print(f"{cursor.rowcount} colunas atualizadas")
+
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+    finally:
+        cursor.close()
+        conn.close()
+
+def remover_usuario(username : str, password: str):
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        query = "DELETE FROM usuarios where username = %s AND password = %s"
+        cursor.execute(query,(username,password))
         conn.commit()
         print(f"{cursor.rowcount} colunas atualizadas")
 

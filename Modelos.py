@@ -18,12 +18,14 @@ class Usuario:
     join_date : date
 
 @dataclass
-class Post  :
-      id : int
-      username: str
-      likes : int
-      comments : list
-      create_date : datetime
+class Post:
+    id : int
+    title: str
+    body : str
+    username: str
+    likes : int
+    comments : list
+    create_date : datetime
 
 @dataclass
 class Like:
@@ -31,3 +33,12 @@ class Like:
     username_de : str
     username_para : str
     data_conexao : date
+
+@dataclass
+class Comentario:
+    id : int
+    id_post : int
+    username: str
+    likes : int
+    responses : list
+    create_date : datetime

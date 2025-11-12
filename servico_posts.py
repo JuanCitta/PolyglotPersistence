@@ -1,14 +1,7 @@
 from pymongo import MongoClient
-from typing import TypedDict
-from pymongo.collection import Collection
-from pymongo import errors
 from Modelos import Post
-import randomname
-from random import randint
-from datetime import date, datetime
-
-
-
+from dataclasses import asdict
+from servico_conexoes import inserir_conexao_post, inserir_conexao_posts
 client : MongoClient = MongoClient()
 uri = "mongodb://localhost:27017/"
 client = MongoClient(uri)
@@ -16,27 +9,66 @@ client = MongoClient(uri)
 db = client["lankedin"]
 collection = db["posts"]
 
+def contar_posts():
+    try:
+        res = collection.count_documents({})
+        print(res)
+        return res
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+
 def inserir_posts(posts : list[Post]):
-    collection.drop()
-    result = collection.insert_many(posts)
-    if result:
-        return f"Mensagem de sucesso. Foram inseridos {len(posts)} documentos"
-  
-def buscar_posts(usuario: str = None):
-    cursor = collection.find({"username" : usuario}).limit(3)
-    posts_list = []
-    for post in cursor:
-        del post["_id"]
-        novo_post = Post(**cursor)
-        posts_list.append(novo_post)
-    return posts_list
+    try:
+        collection.drop()
+        result = collection.insert_many(posts)
+        inserir_conexao_posts(posts)
+        return result
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+
+def inserir_post(post : Post):
+    try:
+        result = collection.insert_one(asdict(post))
+        inserir_conexao_post(post.id,post.username,post.create_date)
+        return result
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+
+def buscar_posts(usuario: str):
+    try:
+        result = collection.find({"username" : usuario}).limit(3)
+        posts_list = []
+        for post in result:
+            del post["_id"]
+            novo_post = Post(**result)
+            posts_list.append(novo_post)
+        return posts_list
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+
+def buscar_post(id : str):
+    try:
+        result = collection.find_one({"id": id})
+        del result["_id"]
+        post_dict = Post(**result)
+        return post_dict
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
 
 def deletar_post(id_post : int ):
-    cursor = collection.find_one_and_delete({"id" : id_post})
-    del cursor["_id"]
-    post_deletado = Post(**cursor)
-    print(post_deletado)
-    return post_deletado
+    try: 
+        cursor = collection.find_one_and_delete({"id" : id_post})
+        del cursor["_id"]
+        post_deletado = Post(**cursor)
+        return post_deletado
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
 
 # def alterar_post(id_post : int):
 #     cursor = collection.update_one({"id" : id_post})
