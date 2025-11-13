@@ -33,7 +33,7 @@ def inserir_posts(posts : list[dict]):
 def inserir_post(post : Post):
     try:
         result = collection.insert_one(asdict(post))
-        return f"Sucesso: Foi inserido post de id: {post.id}.", result
+        return f"Sucesso: Foi inserido post: {asdict(post)}."
     except Exception as e:
         print(e)
         return f"Erro na transacao com o banco {e}"
@@ -46,7 +46,7 @@ def buscar_posts(usuario: str):
             del post["_id"]
             posts_list.append(post)
         print(posts_list)
-        return posts_list, f"Usuario tem {len(posts_list)} postagens"
+        return posts_list
     except Exception as e:
         print(e)
         return f"Erro na transacao com o banco {e}"
@@ -54,9 +54,9 @@ def buscar_posts(usuario: str):
 def buscar_post(id : int):
     try:
         result = collection.find_one({"id": id})
-        # if(result):
-        #     del result["_id"]
-        return f"Post do usuario: {result["username"]} ", result
+        if(result):
+            del result["_id"]
+        return result
     except Exception as e:
         print(e)
         return f"Erro na transacao com o banco {e}"
@@ -97,6 +97,21 @@ def alterar_likes_post(id_post : int):
             del cursor["_id"]
             post_alterado = cursor
             return post_alterado, f"Post {id_post} foi alterado"
+        else: 
+            return f"Nenhum post encontrado. "
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+
+def alterar_usuario_post(username: str, username_novo : str):
+    try: 
+
+        result = collection.update_many({"username" : username},
+                                   {
+                                    "$set": { "username": username_novo},
+                                   })
+        if result :
+            return f"{result.modified_count} usernames foram alterados"
         else: 
             return f"Nenhum post encontrado. "
     except Exception as e:

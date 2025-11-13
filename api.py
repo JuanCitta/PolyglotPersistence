@@ -15,7 +15,6 @@ async def get_all_users():
 @app.get("/users/{username}")
 async def get_user_by_username(username : str):
     usuario = buscar_usuario(username)
-    print(usuario)
     return usuario
 
 @app.post("/users")
@@ -98,6 +97,11 @@ async def delete_connections(u : str, userdata: dict):
     msg= remover_conexoes(u)
     return msg
 
+@app.put("/conexoes/alterar_usuario/{u}")
+async def alter_username(u: str, data : dict):
+    un = data["username_novo"]
+    msg = alterar_usuario_conexao(u,un)
+    return msg
 ## --- FIM CONEXOES -------------------------------------------------
 
 ## --- PARTE POSTS -----------------------------------------------
@@ -112,18 +116,18 @@ async def insert_posts_nodes(posts : list[dict]):
 @app.post("/posts")
 async def insert_post(post : dict):
     p = Post(**post)
-    res, msg = inserir_post(p)
+    msg = inserir_post(p)
     return msg
 
 @app.get("/posts/{id}")
 async def get_post_by_id(id : int):
-    post,res = buscar_post(id)
+    post= buscar_post(id)
     return post
 
 @app.get("/posts/por/{u}")
 async def get_post_by_user(u: str):
-    posts, msg = buscar_posts(u)
-    return msg
+    posts = buscar_posts(u)
+    return posts
 
 @app.delete("/posts/{id_post}")
 async def delete_post_by_id(id_post: int):
@@ -141,4 +145,11 @@ async def alter_post_by_id(id_post : int, data : dict):
 async def like_post(id_post : int):
     post = alterar_likes_post(id_post)
     return post
+
+@app.put("/posts/alterar_usuario/{u}")
+async def alter_username_posts(u: str, data : dict):
+    un = data["username_novo"]
+    msg = alterar_usuario_post(u,un)
+    return msg
+
 ## --- FIM POSTS -------------------------------------------------

@@ -57,7 +57,7 @@ def inserir_usuario(user):
         tupla = (user.id, user.username, user.email, user.password, user.join_date)
         cursor.execute(query,tupla)
         conn.commit()
-        return f"Mensagem de sucesso. {len(tupla)} usuarios foram adicionados."
+        return f"Mensagem de sucesso. {tupla} foi adicionado."
 
     except Exception as e:
         print(e)
@@ -74,8 +74,7 @@ def buscar_usuario(username):
         query = "SELECT * FROM usuarios WHERE username = %s"
         cursor.execute(query,(username,))
         resultado = cursor.fetchone()
-        retorno = Usuario(*resultado)
-        return retorno
+        return resultado
     
     except Exception as e:
         print(e)

@@ -4,7 +4,6 @@ from servico_conexoes import *
 from gerador_de_dados import *
 from Modelos import *
 import requests
-import json
 
 url = 'http://127.0.0.1:8000' 
 
@@ -33,7 +32,7 @@ def transformar_em_dict(lista : list):
         return lista_limpa
     else: return asdict(lista)
 
-def main():
+def menu():
     print("--------------------------------")
     print("            Lankedin")
     print("--------------------------------")
@@ -43,6 +42,11 @@ def main():
     print("Modos: 3. R Mostrar dados")
     print("Modos: 4. U Alterar dados")
     print("Modos: 5. D Deletar dados")
+    print("Modos: 6. - Mostrar Menu")
+    print("Modos: 0. - Sair")
+
+def main():
+    menu()
     i = 1
     while(i != 0):
         i = int(input("Digite o numero da funcionalidade: "))
@@ -96,13 +100,13 @@ def main():
                         fazer_request("get",u,f"/users/{u}")
                     case 2:
                         u = input("Digite o usuario: ")
-                        print(fazer_request("get",u,f"/conexoes/{u}"))
+                        fazer_request("get",u,f"/conexoes/{u}")
                     case 3:
                         p = int(input("Digite o id do post: "))
-                        print(fazer_request("get",p,f"/posts/{p}"))
+                        fazer_request("get",p,f"/posts/{p}")
                     case 4:
                         u =input("Digite o usuario para ver seus posts: ")
-                        print(fazer_request("get",u,f"/posts/por/{u}"))
+                        fazer_request("get",u,f"/posts/por/{u}")
             case 4:
                 print("1. Alterar usuario")
                 print("2. Alterar senha")
@@ -114,7 +118,8 @@ def main():
                         un = input("Digite o novo nome de usuario: ")
                         dados = {"username_novo" : un}
                         fazer_request("put",dados,f"/users/{u}")
-                        
+                        fazer_request("put",dados,f"/conexoes/alterar_usuario/{u}")
+                        fazer_request("put",dados,f"/posts/alterar_usuario/{u}")
                     case 2:
                         u = input("Digite o nome de usuario: ")
                         p = input("Digite o novo password: ")
@@ -148,7 +153,8 @@ def main():
                     case 3:
                         p = int(input("Digite o id do post: "))
                         fazer_request("delete",p,f"/posts/{p}")
-
+            case 6:
+                menu()
 
 def inserir_no_log(response):
     string = f"{response.text} em {response.elapsed} \n"

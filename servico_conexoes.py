@@ -138,3 +138,17 @@ def inserir_like(username : str, id_post : int, data: str):
             database_="neo4j",
             )
         if summary.counters.relationships_created > 0: return f"Mensagem de sucesso. {username} gostou de {id_post}."
+
+
+def alterar_usuario_conexao(username : str, username_novo : str):
+    with GraphDatabase.driver(URI, auth=AUTH) as driver:
+        records, summary, key = driver.execute_query("""
+                MATCH (a:user)
+                WHERE a.username = $name
+                SET a.username = $newName
+                RETURN a
+                """,
+            name=username, newName=username_novo,
+            database_="neo4j",
+            )
+        if summary.counters.properties_set > 0: return f"Mensagem de sucesso alterar_usuario. {username} trocou para {username_novo}."
