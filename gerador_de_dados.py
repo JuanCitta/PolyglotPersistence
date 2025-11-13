@@ -35,7 +35,9 @@ def gerar_post():
     id = contar_posts() + 1
     date = datetime.now()
     string_date = date.strftime("%Y-%m-%d %H:%M:%S")
-    post = Post(comments=[],create_date=string_date,id=id,username=user.username,likes=0)
+    titulo = fake.bairro()
+    corpo = fake.catch_phrase()
+    post = Post(comments=[],create_date=string_date,id=id,username=user.username,likes=0,title=titulo,body=corpo)
     return post
 
 def popular_usuarios(n):

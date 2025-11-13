@@ -1,5 +1,6 @@
 from neo4j import GraphDatabase
 from Modelos import Conexao
+from dataclasses import asdict
 
 # URI examples: "neo4j://localhost", "neo4j+s://xxx.databases.neo4j.io"
 URI = "bolt://localhost:7687"
@@ -38,11 +39,10 @@ def inserir_conexao(conexao : Conexao):
             )
         if summary.counters.relationships_created > 0:
             
-            print(f"Nova conexao: {conexao.username_de} <-> {conexao.username_para}")
+            return (f"Nova conexao: {conexao.username_de} <-> {conexao.username_para}")
         
         else:
-            print(f"Conexao ja existente: {conexao.username_de} <-> {conexao.username_para}")
-    return summary
+            return print(f"Conexao ja existente: {conexao.username_de} <-> {conexao.username_para}")
 
 
 def buscar_conexoes(usuario : str):
@@ -72,7 +72,23 @@ def remover_conexao(usuario1 :str, usuario2 : str):
                 username_para = record["usuario_para"],
                 data_conexao = record["data_conexao"]
             )
-            return conexao
+            return asdict(conexao), f"Sucesso, conexao entre {conexao.username_de} e {conexao.username_para} deletada"
+        else:
+            print("Nenhuma conexao encontrada")
+            return 
+        
+def remover_conexoes(usuario1 :str):
+    with GraphDatabase.driver(URI, auth= AUTH) as driver:
+        records, summary, keys = driver.execute_query("""
+            MATCH (a:user{username : $name1})
+            WITH a, a.username AS usuario_de
+            DETACH DELETE a
+            RETURN usuario_de""",
+            name1 = usuario1, database_="neo4j")
+        if(summary.counters.relationships_deleted > 0):
+            record = records[0]
+            username_de = record["usuario_de"],
+            return f"Sucesso usuario {username_de} deletado {summary.counters.relationships_deleted} conexoes deletadas."
         else:
             print("Nenhuma conexao encontrada")
             return 
@@ -82,7 +98,7 @@ def inserir_conexao_post(post_id : int, username : str, data):
         records, summary, keys = driver.execute_query("""
                 MERGE (a:user {username: $name})
                 MERGE (b:post {post_id: $id_post})
-                MERGE (a)-[:POSTOU {desde: $date}]->(b)
+                MERGE (a)-[:POSTOU {em: $date}]->(b)
                 """,
                 name=username, id_post=post_id,date= data,
                 database_="neo4j",
@@ -93,7 +109,7 @@ def inserir_conexao_post(post_id : int, username : str, data):
         
         else:
             print(f"Conexao ja existente: {username} -> {post_id}")
-    return summary
+    return f"Post {post_id} de {username}"
 
 def inserir_conexao_posts(posts):
     with GraphDatabase.driver(URI, auth=AUTH) as driver:
@@ -109,10 +125,16 @@ def inserir_conexao_posts(posts):
                     name=username, id_post=post_id,date= data,
                     database_="neo4j",
                 )
-            #if summary.counters.relationships_created > 0:
-                
-                #print(f"Nova conexao: {username} -> {post_id}")
-            
-            #else:
-                #print(f"Conexao ja existente: {username} -> {post_id}")
-    return f"Sucesso!: {len(posts)} conexoes adicionadas"
+    return f"Sucesso!: {len(posts)} conexoes de usuario->post adicionadas"
+
+def inserir_like(username : str, id_post : int, data: str):
+    with GraphDatabase.driver(URI, auth=AUTH) as driver:
+        records, summary, key = driver.execute_query("""
+                MATCH (a:user {username: $name})
+                MATCH (b:post {post_id: $friendName})
+                MERGE (a)-[:GOSTOU {desde: $date}]->(b)
+                """,
+            name=username, friendName=id_post,date= data,
+            database_="neo4j",
+            )
+        if summary.counters.relationships_created > 0: return f"Mensagem de sucesso. {username} gostou de {id_post}."
