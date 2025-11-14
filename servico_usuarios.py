@@ -3,6 +3,7 @@ from Modelos import Usuario
 
 
 def conectar():
+      #192.168.15.3
       conn = psycopg2.connect(
         host="192.168.15.86",
         database="postgres",
@@ -144,7 +145,10 @@ def alterar_username(username : str,username_novo : str):
          WHERE username = %s"""
         cursor.execute(query,(username_novo,username))
         conn.commit()
-        return (f"{cursor.rowcount} colunas atualizadas")
+        if(cursor.rowcount == 1):
+            return f"Sucesso, usuario {username} deletado "
+        else:
+            return f"Usuario ou senha nao encontrados "
 
     except Exception as e:
         print(e)
@@ -161,7 +165,10 @@ def alterar_password(username : str,password_novo : str):
          WHERE username = %s"""
         cursor.execute(query,(password_novo,username))
         conn.commit()
-        return f"Sucesso, {username} alterou a senha. {cursor.rowcount} colunas atualizadas"
+        if(cursor.rowcount == 1):
+            return f"Sucesso, usuario {username} deletado "
+        else:
+            return f"Usuario ou senha nao encontrados "
     except Exception as e:
         print(e)
         return f"Erro na transacao com o banco {e}"
@@ -177,7 +184,10 @@ def remover_usuario(username : str, password: str):
         query = "DELETE FROM usuarios where username = %s AND password = %s"
         cursor.execute(query,(username,password))
         conn.commit()
-        return f"Sucesso, usuario {username} deletado "
+        if(cursor.rowcount == 1):
+            return f"Sucesso, usuario {username} deletado "
+        else:
+            return f"Usuario ou senha nao encontrados "
 
     except Exception as e:
         print(e)
