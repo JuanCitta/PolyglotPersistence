@@ -7,14 +7,16 @@ from servico_posts import contar_posts
 
 fake = Faker('pt_BR')
 
-def gerar_usuario(n):
+def gerar_usuario():
+    n = quantidade_usuarios()
     id = n[0]
     id += 1
     username = fake.user_name()
     email = f"{username}@email.com"
     senha = fake.password(8)
     join_date = fake.date_this_year()
-    user =(Usuario(id=id,username=username,email=email,password=senha,join_date=join_date))
+    string_date = join_date.strftime("%Y-%m-%d %H:%M:%S")
+    user =(Usuario(id=id,username=username,email=email,password=senha,join_date=string_date))
     return user
 
 def gerar_conexao():
@@ -22,15 +24,20 @@ def gerar_conexao():
     user2 = usuario_aleatorio()
     while(user1 == user2):
         user2 = usuario_aleatorio()
-    data_start = min(user1.join_date,user2.join_date)
-    data = fake.date_between_dates(date_start=data_start,date_end=date(2025,12,11))
-    conexao = Conexao(username_de=user1.username,username_para=user2.username,data_conexao=data)
+    date_start = min(user1.join_date,user2.join_date)
+    connect_date = fake.date_between_dates(date_start=date_start,date_end=date(2025,12,11))
+    string_date = connect_date.strftime("%Y-%m-%d %H:%M:%S")
+    conexao = Conexao(username_de=user1.username,username_para=user2.username,data_conexao=string_date)
     return conexao
 
 def gerar_post():
     user = usuario_aleatorio()
     id = contar_posts() + 1
-    post = Post(comments=[],create_date=datetime.now(),id=id,username=user.username,likes=0)
+    date = datetime.now()
+    string_date = date.strftime("%Y-%m-%d %H:%M:%S")
+    titulo = fake.bairro()
+    corpo = fake.catch_phrase()
+    post = Post(comments=[],create_date=string_date,id=id,username=user.username,likes=0,title=titulo,body=corpo)
     return post
 
 def popular_usuarios(n):
@@ -40,7 +47,8 @@ def popular_usuarios(n):
         email = f"{username}@email.com"
         senha = fake.password(8)
         join_date = fake.date_this_year()
-        usuarios.append(Usuario(id=i,username=username,email=email,password=senha,join_date=join_date))
+        string_date = join_date.strftime("%Y-%m-%d")
+        usuarios.append(Usuario(id=i,username=username,email=email,password=senha,join_date=string_date))
     return usuarios
 
 
@@ -66,9 +74,11 @@ def popular_conexoes(usuarios):
             par = (min(username_de, username_para), max(username_de, username_para))
             if par in pares_conexao:
                 continue  
-
-            data = fake.date_between_dates(date_start=data_criacao,date_end=date(2025,12,11))
-            conexoes.append(Conexao(username_de,username_para,data))
+            
+            if(isinstance(data_criacao,str)): data_criacao_date = datetime.strptime(data_criacao, '%Y-%m-%d').date()
+            data = fake.date_between(start_date=data_criacao_date,end_date=date(2025,12,11))
+            string_date = data.strftime("%Y-%m-%d %H:%M:%S")
+            conexoes.append(Conexao(username_de,username_para,string_date))
             pares_conexao.add(par)
     return conexoes
 
@@ -80,18 +90,18 @@ def popular_posts(usuarios):
     for usuario in usuarios:
         for i in range(0,3):
             count+= 1
-            join_datetime = datetime.combine(usuario.join_date, datetime.min.time())
             titulo = fake.bairro()
             corpo = fake.catch_phrase()
-            data = fake.date_time_between_dates(datetime_start=join_datetime,datetime_end=datetime.now())
-            novo_post : Post = {
+            data = datetime.now()
+            string_date = data.strftime("%Y-%m-%d %H:%M:%S")
+            novo_post = {
                 "id" : count,
-                "titulo" : titulo,
-                "corpo" : corpo,
+                "title" : titulo,
+                "body" : corpo,
                 "username" : usuario.username,
                 "likes" : 0,
                 "comments" : [],
-                "create_date" : data
+                "create_date" : string_date
             }
 
             posts.append(novo_post)

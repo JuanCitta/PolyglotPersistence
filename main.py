@@ -3,6 +3,7 @@ from servico_posts import *
 from servico_conexoes import *
 from gerador_de_dados import *
 from Modelos import *
+import requests
 
 
 def main():
