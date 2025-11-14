@@ -7,6 +7,15 @@ import requests
 
 url = 'http://127.0.0.1:8000' 
 
+def inserir_no_log(response):
+    string = f"{response.text} em {response.elapsed} \n"
+    with open("log.txt", 'a') as log:
+        log.write(string)
+
+def inserir_string_log(strin):
+    with open("log.txt", 'a') as log:
+        log.write(strin+"\n")
+
 def fazer_request(operacao,dados,endpoint):
     try:
 
@@ -93,6 +102,7 @@ def main():
                 print("2. Mostrar conexoes de usuario")
                 print("3. Mostrar Post por ID")
                 print("4. Mostrar Posts por username")
+                print("5. Mostrar todos os usuarios")
                 m = int(input("Digite o modo: "))
                 match m:
                     case 1:
@@ -107,6 +117,9 @@ def main():
                     case 4:
                         u =input("Digite o usuario para ver seus posts: ")
                         fazer_request("get",u,f"/posts/por/{u}")
+                    case 5:
+                        u = 0
+                        fazer_request("get",u,f"/users")
             case 4:
                 print("1. Alterar usuario")
                 print("2. Alterar senha")
@@ -156,14 +169,6 @@ def main():
             case 6:
                 menu()
 
-def inserir_no_log(response):
-    string = f"{response.text} em {response.elapsed} \n"
-    with open("log.txt", 'a') as log:
-        log.write(string)
-
-def inserir_string_log(strin):
-    with open("log.txt", 'a') as log:
-        log.write(strin+"\n")
 if __name__ == "__main__":
     main()
 

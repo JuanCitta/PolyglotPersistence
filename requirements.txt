@@ -1,0 +1,6 @@
+Faker
+neo4j
+pymongo
+psycopg2-binary
+fastapi
+"fastapi[standard]"
