@@ -93,6 +93,38 @@ def remover_conexoes(usuario1 :str):
             print("Nenhuma conexao encontrada")
             return 
 
+def remover_conexao_like(post_id : int, username: str):
+    with GraphDatabase.driver(URI, auth=AUTH) as driver:
+        records, summary, keys = driver.execute_query("""
+            MATCH(a:user {username: $name})-[r:GOSTOU]-(p:post {post_id : $post_id})
+            DELETE r
+            RETURN a.username AS user,p.post_id AS post
+        """,
+        name= username, post_id = post_id, database="neo4j")
+        if summary.counters.relationships_deleted > 0:
+            return f"Like deletado com sucesso. User {username} e post {post_id}"
+        else:
+            return f"Nao foi encontrado usuario"
+
+def retornar_likes(username: str):
+    with GraphDatabase.driver(URI, auth=AUTH) as driver:
+        records, summary, keys = driver.execute_query("""
+            MATCH(a:user {username: $name})-[r:GOSTOU]-(p:post)
+            RETURN a.username AS user,p.post_id AS post
+        """,
+        name= username, database="neo4j")
+        if(len(records) > 0):
+            likes = []
+            for record in records:
+                user = record["user"]
+                post_id = record["post"]
+                likes.append([user,post_id])
+            return likes
+            return f"Usuario tem {len(likes)}"
+        else:
+            return f"Nao foi encontrado usuario"
+
+
 def inserir_conexao_post(post_id : int, username : str, data):
     with GraphDatabase.driver(URI, auth=AUTH) as driver:
         records, summary, keys = driver.execute_query("""

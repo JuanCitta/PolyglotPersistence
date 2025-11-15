@@ -87,6 +87,23 @@ def alterar_post(id_post : int, title:str, body: str):
         print(e)
         return f"Erro na transacao com o banco {e}"
 
+def diminuir_likes_post(id_post : int):
+    try: 
+        cursor = collection.find_one_and_update({"id" : id_post},
+                                   {
+                                    "$inc": { "likes": -1},
+                                   })
+        if cursor :
+            del cursor["_id"]
+            post_alterado = cursor
+            return post_alterado, f"Post {id_post} foi alterado"
+        else: 
+            return f"Nenhum post encontrado. "
+    except Exception as e:
+        print(e)
+        return f"Erro na transacao com o banco {e}"
+
+
 def alterar_likes_post(id_post : int):
     try: 
         cursor = collection.find_one_and_update({"id" : id_post},

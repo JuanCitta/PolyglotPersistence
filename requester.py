@@ -103,6 +103,7 @@ def main():
                 print("3. Mostrar Post por ID")
                 print("4. Mostrar Posts por username")
                 print("5. Mostrar todos os usuarios")
+                print("6. Mostrar likes do usuario")
                 m = int(input("Digite o modo: "))
                 match m:
                     case 1:
@@ -120,10 +121,15 @@ def main():
                     case 5:
                         u = 0
                         fazer_request("get",u,f"/users")
+                    case 6:
+                        u = input("Digite o usuario: ")
+                        l =fazer_request("get",u,f"/conexoes/likes/{u}")
+                    
             case 4:
                 print("1. Alterar usuario")
                 print("2. Alterar senha")
                 print("3. Alterar post")
+                print("4. Dislike post")
                 m = int(input("Digite o modo: "))
                 match m:
                     case 1:
@@ -133,6 +139,10 @@ def main():
                         fazer_request("put",dados,f"/users/{u}")
                         fazer_request("put",dados,f"/conexoes/alterar_usuario/{u}")
                         fazer_request("put",dados,f"/posts/alterar_usuario/{u}")
+                        lista_likes = fazer_request("get",u,f"/conexoes/likes/{u}")
+                        for like in lista_likes:
+                            p = like[1]
+                            fazer_request("put",p,f"/posts/dislike/{p}")
                     case 2:
                         u = input("Digite o nome de usuario: ")
                         p = input("Digite o novo password: ")
@@ -144,8 +154,13 @@ def main():
                         body = input("Digite o novo corpo: ")
                         dados = {"title" : title, "body" : body}
                         fazer_request("put",dados,f"/posts/{p}")
+                    case 4:
+                        p = int(input("Digite o id do post: "))
+                        u = input("Digite o id do usuario")
+                        dados = {"usuario" : u}
+                        fazer_request("put",p,f"/posts/dislike/{p}")
+                        fazer_request("delete",dados,f"/conexoes/likes/{p}")
                         
-
             case 5:
                 print("1. Deletar usuario")
                 print("2. Deletar conexao")
@@ -160,9 +175,9 @@ def main():
                         fazer_request("delete",dados,f"/conexoes/remover_usuario/{u}")
                     case 2:
                         u = input("Digite o usuario1: ")
-                        u2 = input("Digite o usuario1: ")
+                        u2 = input("Digite o usuario2: ")
                         dados = {"usuario_2" : u2}
-                        fazer_request("delete",dados,f"/conexoes/remover_usuario/{u}")
+                        fazer_request("delete",dados,f"/conexoes/{u}")
                     case 3:
                         p = int(input("Digite o id do post: "))
                         fazer_request("delete",p,f"/posts/{p}")

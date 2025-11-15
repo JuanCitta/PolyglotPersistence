@@ -13,7 +13,7 @@ def gerar_usuario():
     id += 1
     username = fake.user_name()
     email = f"{username}@email.com"
-    senha = fake.password(8)
+    senha = "password"#fake.password(8)
     join_date = fake.date_this_year()
     string_date = join_date.strftime("%Y-%m-%d %H:%M:%S")
     user =(Usuario(id=id,username=username,email=email,password=senha,join_date=string_date))
@@ -45,7 +45,7 @@ def popular_usuarios(n):
     for i in range(n):
         username = fake.user_name()
         email = f"{username}@email.com"
-        senha = fake.password(8)
+        senha = "password" #fake.password(8)
         join_date = fake.date_this_year()
         string_date = join_date.strftime("%Y-%m-%d")
         usuarios.append(Usuario(id=i,username=username,email=email,password=senha,join_date=string_date))

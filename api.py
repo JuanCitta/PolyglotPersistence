@@ -86,6 +86,11 @@ async def get_connections_by_username(username : str):
     conexao = buscar_conexoes(username)
     return conexao
 
+@app.get("/conexoes/likes/{u}")
+async def get_likes_by_username(u : str):
+    lista = retornar_likes(u)
+    return lista
+
 @app.delete("/conexoes/{u}")
 async def delete_connection(u : str, userdata : dict):
     us2 = userdata["usuario_2"]
@@ -97,6 +102,11 @@ async def delete_connections(u : str, userdata: dict):
     msg= remover_conexoes(u)
     return msg
 
+@app.delete("/conexoes/likes/{p}")
+async def delete_like(p: int, data: dict):
+    u = data["usuario"]
+    msg = remover_conexao_like(p, u)
+    return msg
 @app.put("/conexoes/alterar_usuario/{u}")
 async def alter_username(u: str, data : dict):
     un = data["username_novo"]
@@ -145,6 +155,12 @@ async def alter_post_by_id(id_post : int, data : dict):
 async def like_post(id_post : int):
     post = alterar_likes_post(id_post)
     return post
+
+@app.put("/posts/dislike/{id_post}")
+async def delete_like_post(id_post : int):
+    post = diminuir_likes_post(id_post)
+    return post
+
 
 @app.put("/posts/alterar_usuario/{u}")
 async def alter_username_posts(u: str, data : dict):
