@@ -120,7 +120,6 @@ def retornar_likes(username: str):
                 post_id = record["post"]
                 likes.append([user,post_id])
             return likes
-            return f"Usuario tem {len(likes)}"
         else:
             return f"Nao foi encontrado usuario"
 
@@ -184,3 +183,20 @@ def alterar_usuario_conexao(username : str, username_novo : str):
             database_="neo4j",
             )
         if summary.counters.properties_set > 0: return f"Mensagem de sucesso alterar_usuario. {username} trocou para {username_novo}."
+
+def remover_node_post(post_id: int):
+    with GraphDatabase.driver(URI, auth= AUTH) as driver:
+        records, summary, keys = driver.execute_query("""
+            MATCH (p:post{post_id : $post_id})
+            OPTIONAL MATCH (p)<-[r:GOSTOU]-()
+            WITH p, count(r) as qtd_likes
+            DETACH DELETE p
+            RETURN qtd_likes""",
+            post_id = post_id, database_="neo4j")
+        if(summary.counters.relationships_deleted > 0):
+            record = records[0]
+            qtd_likes = record["qtd_likes"],
+            return f"{qtd_likes} likes foram deletados do post {post_id}"
+        else:
+            print("Nenhuma conexao encontrada")
+            return 

@@ -107,6 +107,10 @@ async def delete_like(p: int, data: dict):
     u = data["usuario"]
     msg = remover_conexao_like(p, u)
     return msg
+@app.delete("/conexoes/remover_post/{p}")
+async def delete_post_node(p: int):
+    msg = remover_node_post(p)
+    return msg
 @app.put("/conexoes/alterar_usuario/{u}")
 async def alter_username(u: str, data : dict):
     un = data["username_novo"]
@@ -141,7 +145,7 @@ async def get_post_by_user(u: str):
 
 @app.delete("/posts/{id_post}")
 async def delete_post_by_id(id_post: int):
-    post, msg = deletar_post(id_post)
+    msg = deletar_post(id_post)
     return msg
 
 @app.put("/posts/{id_post}")

@@ -1,15 +1,14 @@
 # PolyglotPersistence
 Projeto sobre a implementação da infraestrutura de uma rede social simples.
-Usuários poderão
+As funcionalidades atuais são: CRUD de posts, usuários, likes em posts e conexões entre usuários.
 
 ## Como rodar
 * Clonando o repositório basta abrir um terminal no diretório "PolyglotPersistence".
 * Inserir o comando "docker-compose up -d" para subir os bancos (-d libera o terminal após a conclusão)
 * Inserir o comando fastapi run api.py para subir o servidor uvicorn no endereco e porta :http://127.0.0.1:8000/
-* Em outro terminal inesrir o comando python requester.py
-* Isso abrira o seguinte menu:
-* ![image info](./img/menu_requester.png)
-* As operacoes e seus resultados serao salvos no log.txt
+* Em outro terminal inserir o comando python requester.py
+* Isso abrira um menu interativa para acessar as funcionalidades.
+* As operações e seus resultados serão salvos no log.txt
 
 
 ## Justificativa da escolha dos bancos
@@ -36,6 +35,7 @@ então um banco de documentos, com estrutura flexível se alinhou com as necessi
 
 Implementamos esse serviço que recebe as requisições HTTP do requester.py, realiza a operação e retorna
 os dados ou mensagens de erro.
+
 ## Dependências
 
 #### Python
@@ -61,12 +61,6 @@ Biblioteca para manejar as requests HTTP
 
 pip install fastapi
 
-#### Dataclasses
-
-Para as classes de dados
-
-pip install dataclasses
-
 #### Neo4j
 
 Driver do Neo4j para Python
@@ -84,10 +78,3 @@ pip install pymongo
 Driver do Neo4j para Python
 
 pip install psycopg2
-
-#### Datetime
-
-Biblioteca para manejar datas
-
-pip install class datetime
-

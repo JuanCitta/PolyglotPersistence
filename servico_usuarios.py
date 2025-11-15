@@ -4,7 +4,7 @@ from Modelos import Usuario
 
 def conectar():
       conn = psycopg2.connect(
-        host="172.24.96.1",
+        host="192.168.15.86",
         database="postgres",
         user="postgres",
         password="pass123"

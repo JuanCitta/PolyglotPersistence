@@ -140,9 +140,6 @@ def main():
                         fazer_request("put",dados,f"/conexoes/alterar_usuario/{u}")
                         fazer_request("put",dados,f"/posts/alterar_usuario/{u}")
                         lista_likes = fazer_request("get",u,f"/conexoes/likes/{u}")
-                        for like in lista_likes:
-                            p = like[1]
-                            fazer_request("put",p,f"/posts/dislike/{p}")
                     case 2:
                         u = input("Digite o nome de usuario: ")
                         p = input("Digite o novo password: ")
@@ -181,6 +178,7 @@ def main():
                     case 3:
                         p = int(input("Digite o id do post: "))
                         fazer_request("delete",p,f"/posts/{p}")
+                        fazer_request("delete",p,f"/conexoes/remover_post/{p}")
             case 6:
                 menu()
 
